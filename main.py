@@ -7,6 +7,7 @@ SCANLATOR_ROLE = 'Scanlator'
 
 bot = commands.Bot(command_prefix='!')
 
+#This the font list, the font is the name and the link is... the link.
 font_lists = {
     'Dialogue': [
         {'font': 'Font 1', 'link': 'https://link_to_font1'},
@@ -28,12 +29,14 @@ font_lists = {
     ]
 }
 
+#Console nerd stuff
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user.name}')
     print(f'Bot ID: {bot.user.id}')
     print('------')
 
+#It makes sure the user has the scanlator role.
 @bot.command()
 async def suggest(ctx, font_type: str):
     member = ctx.author
@@ -45,10 +48,10 @@ async def suggest(ctx, font_type: str):
             suggestion = random.choice(suggestions)
             font_name = suggestion['font']
             link = suggestion['link']
-            await ctx.send(f'I suggest using "{font_name}" for {font_type}. Link: {link}')
+            await ctx.send(f'I suggest using "{font_name}" for {font_type}. Link: {link}') #Positive suggestion
         else:
-            await ctx.send(f'Sorry, I don\'t have any suggestions for "{font_type}".')
+            await ctx.send(f'Sorry, I don\'t have any suggestions for "{font_type}".') #Negative suggestion 
     else:
-        await ctx.send(f'Cant access the link? Make sure you have the {SCANLATOR_ROLE} role.')
+        await ctx.send(f'Cant access the link? Make sure you have the {SCANLATOR_ROLE} role.') #If the user doesn't have the scanlator role it sends this
 
 bot.run(TOKEN)
