@@ -2,29 +2,29 @@ import discord
 from discord.ext import commands
 import random
 
-TOKEN = 'your_token_here'
+TOKEN = 
 SCANLATOR_ROLE = 'Scanlator'
 
 bot = commands.Bot(command_prefix='!')
 
 font_lists = {
-    'serif': [
-        {'font': 'Times New Roman', 'link': 'https://link_to_font1'},
-        {'font': 'Georgia', 'link': 'https://link_to_font2'},
-        {'font': 'Baskerville', 'link': 'https://link_to_font3'},
-        {'font': 'Palatino', 'link': 'https://link_to_font4'}
+    'Dialogue': [
+        {'font': 'Font 1', 'link': 'https://link_to_font1'},
+        {'font': 'Font 2', 'link': 'https://link_to_font2'},
+        {'font': 'Font 3', 'link': 'https://link_to_font3'},
+        {'font': 'Font 4', 'link': 'https://link_to_font4'}
     ],
-    'sans-serif': [
-        {'font': 'Arial', 'link': 'https://link_to_font1'},
-        {'font': 'Helvetica', 'link': 'https://link_to_font2'},
-        {'font': 'Verdana', 'link': 'https://link_to_font3'},
-        {'font': 'Calibri', 'link': 'https://link_to_font4'}
+    'Narration': [
+        {'font': 'Font 1', 'link': 'https://link_to_font1'},
+        {'font': 'Font 2', 'link': 'https://link_to_font2'},
+        {'font': 'Font 3', 'link': 'https://link_to_font3'},
+        {'font': 'Font 4', 'link': 'https://link_to_font4'}
     ],
-    'monospace': [
-        {'font': 'Courier New', 'link': 'https://link_to_font1'},
-        {'font': 'Consolas', 'link': 'https://link_to_font2'},
-        {'font': 'Monaco', 'link': 'https://link_to_font3'},
-        {'font': 'Inconsolata', 'link': 'https://link_to_font4'}
+    'SFX': [
+        {'font': 'Font 1', 'link': 'https://link_to_font1'},
+        {'font': 'Font 2', 'link': 'https://link_to_font2'},
+        {'font': 'Font 3', 'link': 'https://link_to_font3'},
+        {'font': 'Font 4', 'link': 'https://link_to_font4'}
     ]
 }
 
@@ -45,10 +45,10 @@ async def suggest(ctx, font_type: str):
             suggestion = random.choice(suggestions)
             font_name = suggestion['font']
             link = suggestion['link']
-            await ctx.send(f'I suggest using "{font_name}" for {font_type} fonts. Link: {link}')
+            await ctx.send(f'I suggest using "{font_name}" for {font_type}. Link: {link}')
         else:
             await ctx.send(f'Sorry, I don\'t have any suggestions for "{font_type}".')
     else:
-        await ctx.send(f'Can\'t access the link. Make sure you have the {SCANLATOR_ROLE} role.')
+        await ctx.send(f'Cant access the link? Make sure you have the {SCANLATOR_ROLE} role.')
 
 bot.run(TOKEN)
