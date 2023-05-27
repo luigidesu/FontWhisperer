@@ -2,10 +2,14 @@ import discord
 from discord.ext import commands
 import random
 
-TOKEN = 
+TOKEN = 'yo token here'
 SCANLATOR_ROLE = 'Scanlator'
 
-bot = commands.Bot(command_prefix='!')
+intents = discord.Intents.default()
+intents.members = True
+intents.message_content = True  # Include privileged message content intent
+
+bot = commands.Bot(command_prefix='!', intents=intents)
 
 #This the font list, the font is the name and the link is... the link.
 font_lists = {
