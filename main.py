@@ -11,7 +11,7 @@ intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix='/', intents=intents)
 
 # This the font list, the font is the name and the link is... the link.
 # Make sure the font lists names are in lowercase, it'll make sense later.
