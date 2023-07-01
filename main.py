@@ -1,10 +1,14 @@
+# TBA 
+# Font Database 
+# Preview of the slash commands
+# A PFP for the bot
 import discord
 from discord.ext import commands
 import random
 from fuzzywuzzy import fuzz
 import asyncio
 
-TOKEN = '' #Add yo token here.
+TOKEN = 'da token'
 SCANLATOR_ROLE = 'Scanlator'
 
 intents = discord.Intents.default()
@@ -14,6 +18,7 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='/', intents=intents)
 
 # This the font lists, the font is the name and the link is... the link, the image is the image link, which will get embed.
+# The format is like this {'font': 'Font Name', 'link': 'Link to discord message with the zip', 'image': 'Link to the font image', 'genre': ['TAG', 'TAG', 'TAG' (Add as many as you want)]}
 font_lists = {
     'Dialogue': [
         {'font': 'Joe Kubert', 'link': 'https://discord.com/channels/846402995252232232/846430804418625536/847154566733627423', 'image': 'https://cdn.discordapp.com/attachments/846430804418625536/847154508442107914/bl017i-2T.png'},
@@ -111,7 +116,6 @@ font_lists = {
     ]
 }
 
-
 # Console nerd stuff
 @bot.event
 async def on_ready():
@@ -128,15 +132,32 @@ def find_closest_match(input_name, available_names):
     matches.sort(key=lambda x: x[1], reverse=True)
     return matches[0][0]
 
+def filter_fonts_by_genre(fonts, genre):
+    filtered_fonts = []
+    for font in fonts:
+        if 'genre' in font and genre in font['genre']:
+            filtered_fonts.append(font)
+    return filtered_fonts
+
+def get_available_tags():
+    available_tags = set()
+    for font_list in font_lists.values():
+        for font in font_list:
+            if 'genre' in font:
+                available_tags.update(font['genre'])
+    return available_tags
+
 @bot.command()
-async def suggest(ctx, font_type: str = None):
-    if font_type is None: #If you send just /suggest without any font, it'll show you the font lists, kinda like a help command.
+async def suggest(ctx, font_type: str = None, genre: str = None):
+    if font_type is None:
         available_lists = '\n* '.join(font_lists.keys())
-        preview_message = f"Hey, I'm the font suggestor. Here are my font lists: \n* {available_lists}\nTo get a suggestion, just type ***/suggest + The list you want to get a suggestion from.***"
+        available_tags = '\n* '.join(get_available_tags())
+        preview_message = f"Hey, I'm the font suggestor.\nTo get a suggestion, just type ***/suggest + The list you want to get a suggestion from.***\nHere are my font lists: \n* {available_lists}\nIn addition to that, you can add a tag to filter them.\nThe available tags are:\n* {available_tags}."
         await ctx.send(preview_message)
         return
+# That's the message it sends if you just type /suggest, without any font list. Is kinda like a /Help command
 
-    if font_type.lower() == "set": #This command gives a set of fonts, getting one font from every list, but without an image, to avoid having 50 embeds.
+    if font_type.lower() == "set":
         suggestion_message = "I suggest using this font set:\n"
         for font_list, suggestions in font_lists.items():
             suggestion = random.choice(suggestions)
@@ -150,25 +171,34 @@ async def suggest(ctx, font_type: str = None):
     member = ctx.author
     scanlator_role = discord.utils.get(member.guild.roles, name=SCANLATOR_ROLE)
     
-    font_type = font_type.lower() #Lowercase protection.
+    font_type = font_type.lower()
     
-    closest_match = find_closest_match(font_type, font_lists.keys()) #Anti-Typo errors measure, so you can send something like "DaILoGeU" and still get a font from the "Dialogue" font list.
+    closest_match = find_closest_match(font_type, font_lists.keys())
     
-    if closest_match in font_lists: 
+    if closest_match in font_lists:
         suggestions = font_lists[closest_match]
+        
+        if genre is not None:
+            filtered_suggestions = filter_fonts_by_genre(suggestions, genre)
+            if len(filtered_suggestions) > 0:
+                suggestions = filtered_suggestions
+            else:
+                await ctx.send(f'Sorry, no fonts matching the genre "{genre}" found in the {closest_match} list.')
+                return
+        
         suggestion = random.choice(suggestions)
         font_name = suggestion['font']
         link = suggestion['link']
         image_link = suggestion['image']
         
-        message = f'I suggest using ***{font_name}*** for {closest_match}.\n{link}' #This is the default message, a suggestion from a list.
+        message = f'I suggest using ***{font_name}*** for {closest_match}.\n{link}'
         
         if scanlator_role is not None and scanlator_role not in member.roles:
-            message += f'\n\nCan\'t access the link? Make sure you have the {SCANLATOR_ROLE} role.\nYou can ask for it on https://discord.com/channels/846402995252232232/951959937746083870' #This is the message sent if the user doesn't have the scanlator role.
+            message += f'\n\nCan\'t access the link? Make sure you have the {SCANLATOR_ROLE} role.\nYou can ask for it on https://discord.com/channels/846402995252232232/951959937746083870' #That's the message it'll send if you don't have the scanlator role.
         
         await ctx.send(message)
-        await ctx.send(image_link)  # Sends the image as a separate message, so it can get embed correctly.
+        await ctx.send(image_link)
     else:
-        await ctx.send(f'Sorry, I don\'t have any suggestions for "{font_type}".') #This error appears if you make a typo, even though we got a protection for that, this can appear.
+        await ctx.send(f'Sorry, I don\'t have any suggestions for "{font_type}".')
 
 bot.run(TOKEN)
